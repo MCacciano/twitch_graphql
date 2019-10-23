@@ -13,44 +13,14 @@ class TwitchAPI extends RESTDataSource {
 		};
 	}
 
-	async asyncGet(url = '', params = {}, { noUserId = false }) {
+	$get(url = '') {
 		const { user_id, headers } = this;
-
-		if (url.length === 0) {
-			console.error('Please enter a url');
-			return;
-		}
-
-		if (noUserId === false) {
-			params = {
-				...params,
-				user_id
-			};
-		}
-
-		console.log(params);
-
-		try {
-			const res = await this.get(url, params, { headers });
-			return res;
-		} catch (err) {
-			console.error(err);
-		}
+		return this.get(url, { user_id }, { headers });
 	}
 
 	async videos() {
-		const videos = await this.asyncGet(`/videos`);
+		const videos = await this.$get(`/videos`);
 		return Array.isArray(videos.data) ? videos.data.map(video => videoReducer(video)) : [];
-	}
-
-	// * technically you can request multiple videos by ID but this has been setup to only use
-	// * one video ID and return that first and only video from the response array
-	async videoById({ id = '' }) {
-		const video = await this.asyncGet(`/videos`, { id }, { noUserId: true });
-
-		console.log(video);
-
-		return Array.isArray(video.data) ? videoReducer(video.data[0]) : [];
 	}
 }
 
